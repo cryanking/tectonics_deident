@@ -217,7 +217,7 @@ covid_files <- c(
 # myf <- 
 covid_summary <-  covid_files %>% lapply(  FUN =function(x) {fread(x)[geoid == 'USA-29189'] } ) %>% rbindlist
 
-covid_summary <- covid_summary[ between( date, ymd("2019-07-01") ,  ymd("2023-02-01")) ] 
+covid_summary <- covid_summary[ between( as.Date(date), ymd("2019-07-01") ,  ymd("2023-02-01")) ] 
 covid_summary [ , roughdate := roughen_date(date)]
 covid_summary[, .(cases = mean(deaths_avg_per_100k, na.rm=T) ), by= 'roughdate'][order(roughdate)] %>% ggplot( aes(x=roughdate, y=cases)) + geom_bar(stat = "identity", position="stack") + labs(x = "Date", y = "Cases / 100k", title = "Covid-19 cases by month") -> temp2
 
