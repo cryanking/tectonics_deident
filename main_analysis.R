@@ -139,7 +139,7 @@ main_analysis <- function(local_data, primary_outcomes = c('CAM', 'RespF' ,'AKI'
     this_data <- this_data[is.finite(x)]
     if(outcome == "ratio_cre") { exp_transform <- exp } else { exp_transform <- identity}
     if(outcome %in%  cont_outcomes) {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, data=this_data)
       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE, type="HC1")
       thistest <- coeftest(thislm, V)
@@ -148,7 +148,7 @@ main_analysis <- function(local_data, primary_outcomes = c('CAM', 'RespF' ,'AKI'
 
       primarytab[primarytab$outcome ==outcome, "p"] <- (thistest['x',4])  %>% jama_p_format
   } else {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, family="poisson" ,data=this_data)
       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE)
       thistest <- coeftest(thislm, V)
@@ -273,7 +273,7 @@ main_analysis_unclustered <- function(local_data, primary_outcomes = c('CAM', 'R
     this_data <- this_data[is.finite(x)]
     if(outcome == "ratio_cre") { exp_transform <- exp } else { exp_transform <- identity}
     if(outcome %in%  cont_outcomes) {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, data=this_data)
 #       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE, type="HC1")
       thistest <- coeftest(thislm)
@@ -282,7 +282,7 @@ main_analysis_unclustered <- function(local_data, primary_outcomes = c('CAM', 'R
 
       primarytab[primarytab$outcome ==outcome, "p"] <- (thistest['x',4]) %>% jama_p_format
   } else {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, family="poisson" ,data=this_data)
 #       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE)
       thistest <- coeftest(thislm)
@@ -331,7 +331,7 @@ main_analysis_uncorrected <- function(local_data, primary_outcomes = c('CAM', 'R
     this_data <- this_data[is.finite(x)]
     if(outcome == "ratio_cre") { exp_transform <- exp } else { exp_transform <- identity}
     if(outcome %in%  cont_outcomes) {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(mean(y, na.rm=T) %>% exp_transform %>% round(2) , " (", round(sd(y  %>% exp_transform, na.rm=TRUE),2), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, data=this_data)
       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE, type="HC1")
       thistest <- coeftest(thislm, V)
@@ -340,7 +340,7 @@ main_analysis_uncorrected <- function(local_data, primary_outcomes = c('CAM', 'R
 
       primarytab[primarytab$outcome ==outcome, "p"] <- (thistest['x',4])  %>% jama_p_format
   } else {
-      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][["state"]]
+      primarytab[primarytab$outcome ==outcome, c("control", "interv") ] <- this_data[ , .(state=paste0(sum(y, na.rm=T) , "/", sum(is.finite(y)) ," (", round(100*mean(y, na.rm=TRUE),1), ")"  ) ) , by="x"][order(x)][["state"]]
       thislm <- glm( formula=y~x, family="poisson" ,data=this_data)
       V <- vcovCL(thislm, cluster = ~ z, cadjust = FALSE)
       thistest <- coeftest(thislm, V)
