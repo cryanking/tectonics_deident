@@ -416,47 +416,6 @@ merged_adt[is.na(ICULoS), ICULoS:=0. ]
 adt_tectonics <- merged_adt #[join_mrns[, .(orlogid=SurgicalRecordID)] , on="orlogid", nomatch=NULL]
 
 
-if(FALSE) {
-## do I get different answers for overlapping patients?
-
-## None, fixed (forced to have no overlap)
-an_start_stop[,.(orlogid, sdate=roughen_date(date(AnestStart))) ][merged_adt_act3[ merged_adt_act3mk2, on="orlogid", nomatch=NULL][ICU != i.ICU], on="orlogid" ][, .(.N, sum(ICU > i.ICU), sum(i.ICU > ICU) ), by="sdate"  ][order(sdate)]
-
-
-
-## almost always new=true and old=false, probably because they were not part of the old query.
-adt_tectonics[ merged_adt_act3mk2[!merged_adt_act3, on="orlogid"], on="orlogid", nomatch=NULL][, .(ICU, i.ICU)] %>% table(useNA='a')
-#        i.ICU
-# ICU     FALSE  TRUE  <NA>
-#   FALSE 22658     3     0
-#   TRUE     49  4428     0
-#   <NA>      0     0     0
-
-
-## randomly spread, not clear why. maybe previously excluded cases?
-an_start_stop[,.(orlogid, sdate=roughen_date(date(AnestStart))) ][adt_tectonics[ merged_adt_act3mk2[!merged_adt_act3, on="orlogid"], on="orlogid", nomatch=NULL][ICU != i.ICU], on="orlogid" ][, .(.N, sum(ICU > i.ICU), sum(i.ICU > ICU) ), by="sdate"  ][order(sdate)]
-
-
-## all new= true old=false, probably because they were not part of the old query.
-## this is much, much smaller than the number of cases
-adt_tectonics[merged_adt_act3, on="orlogid", nomatch=NULL][, .(ICU, i.ICU)] %>% table(useNA='a')
-#        i.ICU
-# ICU     FALSE  TRUE  <NA>
-#   FALSE 27241     0     0
-#   TRUE     77  5087     0
-#   <NA>      0     0     0
-
-
-## distributed throughout, a small bump in the last month
-an_start_stop[,.(orlogid, sdate=roughen_date(date(AnestStart))) ][adt_tectonics[ merged_adt_act3, on="orlogid", nomatch=NULL][ICU != i.ICU], on="orlogid" ][, .(.N, sum(ICU > i.ICU), sum(i.ICU > ICU) ), by="sdate"  ][order(sdate)]
-
-
-## none of my changes meaningfully explain it
-old_calc <- fread( "/research2/ActFast_Intermediates/epic_flo_outcomes_2022.csv")
-old_calc[ merged_adt_act3mk2[!merged_adt_act3, on="orlogid"], on="orlogid", nomatch=NULL][, .(ICU, i.ICU)] %>% table(useNA='a')
-
-}
-
 
 adt_outcomes_merged <- rbind(adt_tectonics, merged_adt_act3mk2,merged_adt_act3) 
 adt_outcomes_merged %<>% unique(by="orlogid")
