@@ -202,8 +202,11 @@ xgdata <- cbind(xgdata, encode_onehot(table1_data$Sex, colname_prefix = "Sex"), 
 xgdata <- xgb.DMatrix(data=xgdata)
 table1_data[, imputed_cr :=   predict(local_fit, newdata=xgdata ) ]
 table1_data[, imputed_cr := case_when( imputed_cr < 0.4 ~ 0.4, imputed_cr > 5. ~ 5., TRUE~imputed_cr) ]
+
 table1_data[, combined_baseline_cr := if_else(is.na(preop_cr),imputed_cr,  preop_cr) ]
 table1_data[, ratio_cre := postop_cr_max7 / combined_baseline_cr ]
+
+
 table1_data[, aki_grade := case_when(
     combined_baseline_cr > 4 ~ NA_integer_ ,
     exclude_aki == TRUE ~ NA_integer_ ,
@@ -211,7 +214,7 @@ table1_data[, aki_grade := case_when(
     ratio_cre > 3 ~3L ,
     ratio_cre > 2 ~2L ,
     ratio_cre > 1.5 ~1L ,
-    postop_cr_max2 - combined_baseline_cr > 0.3 ~ 1L ,
+    coalesce(postop_cr_max2 - preop_cr, 0.) > 0.3 ~ 1L ,
     is.na(postop_cr_max7) ~ -1L ,
     TRUE ~ 0L
   ) ]
