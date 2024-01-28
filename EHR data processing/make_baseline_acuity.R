@@ -155,10 +155,10 @@ xgboost_cv <- function(data
     setinfo(data, "label" , label)
   }
 
-  lower_corner <- :coalesce(lower_bounds, c(2L, .1,  5L, log(0.3), 0, .7  , log(.02)  , 1L) ) 
-  upper_corner <- :coalesce(upper_bounds,  c(6L, 1., 15L, log(200), 5, .95 , log(2000), 1L) )
+  lower_corner <- coalesce(lower_bounds, c(2L, .1,  5L, log(0.3), 0, .7  , log(.02)  , 1L) ) 
+  upper_corner <- coalesce(upper_bounds,  c(6L, 1., 15L, log(200), 5, .95 , log(2000), 1L) )
   
-  evaluation_points <- :sobol(n = sobol_size, dim = length(lower_corner), scrambling=FALSE)
+  evaluation_points <- sobol(n = sobol_size, dim = length(lower_corner), scrambling=FALSE)
   eval_res <- matrix(NA, nrow=sobol_size, ncol=2L)
   
   fixed_params <- c(max_depth, eta, nrounds, min_child_weight, gamma, subsample, lambda, num_parallel_tree )
@@ -166,10 +166,10 @@ xgboost_cv <- function(data
   
   for(sobol_index in seq.int(sobol_size)) {
     transformed_params <- lower_corner + (upper_corner-lower_corner)*evaluation_points[ sobol_index,, drop=TRUE]
-    transformed_params <- :coalesce(fixed_params,  transformed_params)
+    transformed_params <- coalesce(fixed_params,  transformed_params)
     transformed_params[c(1,3,8)] <- round(transformed_params[c(1,3,8)])
     
-    local.model <- :xgb.cv(data=data, nrounds=nrounds, params=c(other_params, list(
+    local.model <- xgb.cv(data=data, nrounds=nrounds, params=c(other_params, list(
     max_depth=transformed_params[1] 
     , eta=transformed_params[2]
     ,  min_child_weight=exp(transformed_params[4])
@@ -190,12 +190,12 @@ xgboost_cv <- function(data
   }
   
   transformed_params <- lower_corner + (upper_corner-lower_corner)*evaluation_points[ which.min(eval_res[,2]), drop=TRUE]
-  transformed_params <- :coalesce(fixed_params,  transformed_params)
+  transformed_params <- coalesce(fixed_params,  transformed_params)
   transformed_params[c(1,3,8)] <- round(transformed_params[c(1,3,8)])
   nrounds <- eval_res[which.min(eval_res[,2]),1]
 
 
-    local.model <- :xgb.train(data=data, params=c(other_params, list(
+    local.model <- xgb.train(data=data, params=c(other_params, list(
     max_depth=transformed_params[1] 
     , eta=transformed_params[2]
     ,  min_child_weight=exp(transformed_params[4])
